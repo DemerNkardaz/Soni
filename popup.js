@@ -185,6 +185,7 @@ function updateUI(volume) {
 	
 	slider.value = volume;
 	currentValueContainer.textContent = `${volume}%`;
+	currentValueContainer.style.color = volume >= 160 ? getVolumeColor(volume) : '#333';
 	
 	currentBrowser.action.setBadgeText({ text: `${volume}` });
 	currentBrowser.action.setBadgeBackgroundColor({ color: getVolumeColor(volume) });
