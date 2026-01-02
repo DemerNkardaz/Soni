@@ -202,48 +202,74 @@ function clampVolumeValue(value, min = volumes.min, max = volumes.max) {
 
 
 async function populateAudibleTabsList() {
-	const listContainer = document.querySelector('.tbr-audible-tabs-list');
-	if (!listContainer) return;
-	
-	listContainer.innerHTML = '';
+	const listContainer = document.querySelector('.tbr-audible-tabs-list')
+	if (!listContainer) return
+
+	listContainer.innerHTML = ''
 
 	try {
-		const tabs = await currentBrowser.tabs.query({currentWindow: true});
-		const audibleTabs = tabs.filter(tab => tab.audible);
+		const tabs = await currentBrowser.tabs.query({currentWindow: true})
+		const audibleTabs = tabs.filter(tab => tab.audible)
 
 		if (audibleTabs.length === 0) {
-			const emptyItem = document.createElement('div');
-			emptyItem.textContent = currentBrowser.i18n.getMessage('noAudibleTabs');
-			emptyItem.classList.add('tbr-audible-tab-empty');
-			listContainer.appendChild(emptyItem);
-			return;
+			const emptyItem = document.createElement('div')
+			emptyItem.textContent = currentBrowser.i18n.getMessage('noAudibleTabs')
+			emptyItem.classList.add('tbr-audible-tab-empty')
+			listContainer.appendChild(emptyItem)
+			return
 		}
 
-		audibleTabs.forEach(tab => {
-			const tabItem = document.createElement('div');
-			tabItem.classList.add('tbr-audible-tab');
+		audibleTabs.forEach(async tab => {
+			const tabItem = document.createElement('div')
+			tabItem.classList.add('tbr-audible-tab')
 
-			const favIcon = document.createElement('img');
-			favIcon.src = tab.favIconUrl || 'icons/default-16.png';
-			favIcon.classList.add('tbr-tab-icon');
-			favIcon.width = 16;
-			favIcon.height = 16;
+			const favIcon = document.createElement('img')
+			favIcon.src = tab.favIconUrl || 'icons/default-16.png'
+			favIcon.classList.add('tbr-tab-icon')
+			favIcon.width = 16
+			favIcon.height = 16
 
-			const title = document.createElement('span');
-			title.textContent = tab.title || 'Untitled';
-			title.classList.add('tbr-tab-title');
+			const title = document.createElement('span')
+			title.textContent = tab.title || 'Untitled'
+			title.classList.add('tbr-tab-title')
 
-			tabItem.appendChild(favIcon);
-			tabItem.appendChild(title);
+			const volumeLabel = document.createElement('span')
+			volumeLabel.classList.add('tbr-tab-volume')
+			volumeLabel.textContent = '…'
+
+			tabItem.appendChild(favIcon)
+			tabItem.appendChild(title)
+			tabItem.appendChild(volumeLabel)
+
+			try {
+				const results = await currentBrowser.scripting.executeScript({
+					target: {tabId: tab.id},
+					func: () => window.gainNode ? window.gainNode.gain.value : null
+				})
+				const gain = results?.[0]?.result
+				if (gain != null) {
+					volumeLabel.textContent = `${Math.round(gain * 100)}%`
+				} else {
+					volumeLabel.textContent = '100%'
+				}
+			} catch {
+				volumeLabel.textContent = '100%'
+			}
+
+			const volumeValue = parseInt(volumeLabel.textContent)
+
+			volumeLabel.style.backgroundColor = getVolumeColor(volumeValue)
+			volumeLabel.style.color = (volumeValue >= 300 || volumeValue <= 200) ? '#fff' : '#333'
 
 			tabItem.addEventListener('click', () => {
-				currentBrowser.tabs.update(tab.id, {active: true});
-				currentBrowser.windows.update(tab.windowId, {focused: true});
-			});
-				listContainer.appendChild(tabItem);
-		});
+				currentBrowser.tabs.update(tab.id, {active: true})
+				currentBrowser.windows.update(tab.windowId, {focused: true})
+			})
+
+			listContainer.appendChild(tabItem)
+		})
 
 	} catch (e) {
-		console.error('Error fetching audible tabs:', e);
+		console.error('Error fetching audible tabs:', e)
 	}
 }
