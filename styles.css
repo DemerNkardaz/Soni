@@ -1,28 +1,14 @@
 :root {
 	--tbr-text-color: #333;
 	--tbr-text-grey-color: #666;
-	--url-text-color: #cfa911;
-	--url-text-color-hover: #e6b800;
-	--url-text-color-active: #ffdb4d;
-	--url-text-color-visited: #b38f00;
+	--url-text-color: #e2b041;
+	--url-text-color-2: #ffd25f;
+	--url-text-color-hover: #ffc532;
+	--url-text-color-active: #fee036;
+	--url-text-color-visited: #e2b041;
 
 	--tbr-body-color: #c1c1c1;
 	--tbr-background-pattern: linear-gradient(22.5deg, rgba(67, 67, 67, 0.02) 0%, rgba(67, 67, 67, 0.02) 29%, rgba(47, 47, 47, 0.02) 29%, rgba(47, 47, 47, 0.02) 37%, rgba(23, 23, 23, 0.02) 37%, rgba(23, 23, 23, 0.02) 55%, rgba(182, 182, 182, 0.02) 55%, rgba(182, 182, 182, 0.02) 69%, rgba(27, 27, 27, 0.02) 69%, rgba(27, 27, 27, 0.02) 71%, rgba(250, 250, 250, 0.02) 71%, rgba(250, 250, 250, 0.02) 100%), linear-gradient(67.5deg, rgba(117, 117, 117, 0.02) 0%, rgba(117, 117, 117, 0.02) 14%, rgba(199, 199, 199, 0.02) 14%, rgba(199, 199, 199, 0.02) 40%, rgba(33, 33, 33, 0.02) 40%, rgba(33, 33, 33, 0.02) 48%, rgba(135, 135, 135, 0.02) 48%, rgba(135, 135, 135, 0.02) 60%, rgba(148, 148, 148, 0.02) 60%, rgba(148, 148, 148, 0.02) 95%, rgba(53, 53, 53, 0.02) 95%, rgba(53, 53, 53, 0.02) 100%), linear-gradient(135deg, rgba(190, 190, 190, 0.02) 0%, rgba(190, 190, 190, 0.02) 6%, rgba(251, 251, 251, 0.02) 6%, rgba(251, 251, 251, 0.02) 18%, rgba(2, 2, 2, 0.02) 18%, rgba(2, 2, 2, 0.02) 27%, rgba(253, 253, 253, 0.02) 27%, rgba(253, 253, 253, 0.02) 49%, rgba(128, 128, 128, 0.02) 49%, rgba(128, 128, 128, 0.02) 76%, rgba(150, 150, 150, 0.02) 76%, rgba(150, 150, 150, 0.02) 100%), linear-gradient(90deg, #ffffff, #ffffff);
-}
-
-a {
-	color: var(--url-text-color);
-	text-decoration: none;
-	&:visited {
-		color: var(--url-text-color-visited);
-	}
-	&:hover {
-		color: var(--url-text-color-hover);
-		text-decoration: underline;
-	}
-	&:active {
-		color: var(--url-text-color-active);
-	}
 }
 
 * {
@@ -35,6 +21,56 @@ html, body {
 		font-family: Arial, sans-serif;
 		font-size: 14px;
 		color: var(--tbr-text-color);
+}
+
+a {
+	color: var(--url-text-color);
+	text-decoration: none;
+
+	&:visited {
+		color: var(--url-text-color);
+	}
+
+	&:hover {
+		color: var(--url-text-color-hover);
+		text-decoration: underline;
+	}
+
+	&:active {
+		color: var(--url-text-color-active);
+	}
+}
+
+button {
+	all: unset;
+	cursor: pointer;
+	display: inline-block;
+	font-family: inherit;
+	font-size: inherit;
+	line-height: inherit;
+	text-align: center;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+
+	background-color: var(--url-text-color-2);
+	padding: 0.25rem 0.5rem;
+	border-radius: 8px;
+	outline: 1px solid transparent;
+	transition: all 0.15s ease;
+	
+	&:hover {
+		outline: 1px solid var(--url-text-color-hover);
+		background-color: var(--url-text-color-hover);
+		outline-offset: 2px;
+	}
+
+	&:active {
+		outline: 1px solid var(--url-text-color-active);
+		background-color: var(--url-text-color-active);
+		outline-offset: 1px;
+	}
 }
 
 body {
@@ -81,24 +117,36 @@ body {
 	align-items: center;
 	gap: 1rem;
 	width: 100%;
-
+	
 	& > .tbr-current-value {
 		font-size: 1.25rem;
 		font-weight: bold;
 	}
-
+	
 	& > .tbr-controls {
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
 		width: 100%;
-
+		
+		& > .tbr-controls__adjust {
+			display: flex;
+			justify-content: right;
+			gap: 0.5rem;
+			margin-bottom: 0.75rem;
+		}
+		
 		& > .tbr-controls__slider {
 			width: 100%;
 
 			& > input[type="range"] {
 				width: 100%;
 			}
+		}
+		& > .tbr-controls__static-values {
+			display: flex;
+			justify-content: center;
+			gap: 0.5rem;
+			margin-top: 1.25rem;
 		}
 	}
 }
@@ -165,26 +213,6 @@ body {
   z-index: 2;
 }
 
-.slider-ticks {
-	position: absolute;
-	top: 50%;
-	height: 30px;
-	width: 100%;
-	pointer-events: none;
-	transform: translateY(-50%);
-	z-index: 1;
-}
-
-.slider-ticks .tick {
-	position: absolute;
-	width: 1px;
-	height: 10px;
-	background: #000;
-	transform: translateX(-50%);
-	z-index: 1;
-}
-
-
 .tbr-audible-tabs-list {
 	display: flex;
 	flex-direction: column;
@@ -203,7 +231,7 @@ body {
 	border-radius: 4px;
 	background-color: rgba(255, 255, 255, 0.05);
 	transition: background-color 0.15s ease;
-	
+
 	&:hover {
 		background-color: rgba(0, 0, 0, 0.1);
 	}

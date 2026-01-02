@@ -38,8 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	slider.setAttribute('min', volumes.min);
 	slider.setAttribute('max', volumes.max);
 	slider.setAttribute('step', volumes.step);
-	createSliderTicks();
 	setSliderGradient(slider);
+
+	staticButtonWrapper.innerHTML = '';
 
 	staticButtonValues.forEach(value => {
 		const btn = document.createElement('button');
@@ -53,48 +54,74 @@ document.addEventListener('DOMContentLoaded', () => {
 	populateAudibleTabsList();
 });
 
-function setSliderGradient(slider) {
-	const thresholds = [200, 250, 300, 350, 500];
-
-	let prev = 0;
-	const gradientParts = thresholds.map(thresh => {
-		const startPercent = (prev / 500) * 100;
-		const endPercent = (thresh / 500) * 100;
-		const color = getVolumeColor(thresh); // берем цвет из твоей функции
-		prev = thresh;
-		return `${color} ${startPercent}%, ${color} ${endPercent}%`;
-	});
-
-	slider.style.background = `linear-gradient(to right, ${gradientParts.join(', ')})`;
-}
-
-function createSliderTicks() {
-	const slider = document.getElementById('vol-slider');
-	const sliderContainer = slider.parentElement;
-
-	let ticksContainer = sliderContainer.querySelector('.slider-ticks');
-	if (!ticksContainer) {
-		ticksContainer = document.createElement('div');
-		ticksContainer.classList.add('slider-ticks');
-		sliderContainer.appendChild(ticksContainer);
+function setSliderGradient(slider, segmentSize = 25) {
+	function lightenColor(hex, percent) {
+		const r = parseInt(hex.slice(1, 3), 16);
+		const g = parseInt(hex.slice(3, 5), 16);
+		const b = parseInt(hex.slice(5, 7), 16);
+		
+		const newR = Math.round(r + (255 - r) * percent);
+		const newG = Math.round(g + (255 - g) * percent);
+		const newB = Math.round(b + (255 - b) * percent);
+		
+		return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
 	}
-	ticksContainer.innerHTML = '';
-
-	const positions = [0, 50, 100, 200, 300, 400, 500];
-	const max = parseFloat(slider.max);
-
-	const sliderRect = slider.getBoundingClientRect();
-	const trackPadding = 8;
-	const trackWidth = sliderRect.width - trackPadding * 2;
-
-	positions.forEach(pos => {
-		const tick = document.createElement('span');
-		tick.classList.add('tick');
-
-		const leftPx = trackPadding + (pos / max) * trackWidth;
-		tick.style.left = `${leftPx}px`;
-		ticksContainer.appendChild(tick);
-	});
+	
+	function darkenColor(hex, percent) {
+		const r = parseInt(hex.slice(1, 3), 16);
+		const g = parseInt(hex.slice(3, 5), 16);
+		const b = parseInt(hex.slice(5, 7), 16);
+		
+		const newR = Math.round(r * (1 - percent));
+		const newG = Math.round(g * (1 - percent));
+		const newB = Math.round(b * (1 - percent));
+		
+		return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
+	}
+	
+	const gradientStops = [];
+	
+	for (let i = 0; i <= 200; i += segmentSize) {
+		const percentStart = i / 500 * 100;
+		const percentEnd = Math.min((i + segmentSize) / 500 * 100, 200 / 500 * 100);
+		const darkenAmount = (200 - i) / 200 * 0.5;
+		const color = darkenColor(colorValues.safe, darkenAmount);
+		gradientStops.push(`${color} ${percentStart}%`, `${color} ${percentEnd}%`);
+	}
+	
+	for (let i = 200; i < 250; i += segmentSize) {
+		const percentStart = i / 500 * 100;
+		const percentEnd = Math.min((i + segmentSize) / 500 * 100, 250 / 500 * 100);
+		const lightenAmount = (250 - i - segmentSize) / 50 * 0.45;
+		const color = lightenColor(colorValues.warning, Math.max(0, lightenAmount));
+		gradientStops.push(`${color} ${percentStart}%`, `${color} ${percentEnd}%`);
+	}
+	
+	for (let i = 250; i < 300; i += segmentSize) {
+		const percentStart = i / 500 * 100;
+		const percentEnd = Math.min((i + segmentSize) / 500 * 100, 300 / 500 * 100);
+		const lightenAmount = (300 - i - segmentSize) / 50 * 0.4;
+		const color = lightenColor(colorValues.caution, Math.max(0, lightenAmount));
+		gradientStops.push(`${color} ${percentStart}%`, `${color} ${percentEnd}%`);
+	}
+	
+	for (let i = 300; i < 350; i += segmentSize) {
+		const percentStart = i / 500 * 100;
+		const percentEnd = Math.min((i + segmentSize) / 500 * 100, 350 / 500 * 100);
+		const lightenAmount = (350 - i - segmentSize) / 50 * 0.4;
+		const color = lightenColor(colorValues.unsafe, Math.max(0, lightenAmount));
+		gradientStops.push(`${color} ${percentStart}%`, `${color} ${percentEnd}%`);
+	}
+	
+	for (let i = 350; i <= 500; i += segmentSize) {
+		const percentStart = i / 500 * 100;
+		const percentEnd = Math.min((i + segmentSize) / 500 * 100, 100);
+		const lightenAmount = (500 - i) / 150 * 0.4;
+		const color = lightenColor(colorValues.danger, lightenAmount);
+		gradientStops.push(`${color} ${percentStart}%`, `${color} ${percentEnd}%`);
+	}
+	
+	slider.style.background = `linear-gradient(to right, ${gradientStops.join(', ')})`;
 }
 
 function getVolumeColor(value) {
