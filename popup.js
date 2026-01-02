@@ -196,32 +196,59 @@ function resetUI() {
 }
 
 function applyVolumeBoost(gain) {
-	if (!window.audioContext) {
-		window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-		window.gainNode = window.audioContext.createGain();
+	try {
+		if (!window.audioContext) {
+			window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+			window.gainNode = window.audioContext.createGain();
+			window.gainNode.connect(window.audioContext.destination);
+			window.boostedElements = new WeakMap();
+		}
 		
-		const mediaElements = document.querySelectorAll('video, audio');
-		mediaElements.forEach(media => {
-			if (!media.dataset.boosted) {
-				try {
-					const source = window.audioContext.createMediaElementSource(media);
-					source.connect(window.gainNode);
-					window.gainNode.connect(window.audioContext.destination);
-					media.dataset.boosted = 'true';
-				} catch (e) {
-					console.warn('Failed to boost media element:', e);
-				}
-			}
-		});
-	}
-	
-	if (window.gainNode) {
 		window.gainNode.gain.value = gain;
+		
+		function boostMediaElement(media) {
+			if (window.boostedElements.has(media)) {
+				return;
+			}
+			
+			try {
+				const source = window.audioContext.createMediaElementSource(media);
+				source.connect(window.gainNode);
+				window.boostedElements.set(media, source);
+			} catch (e) {
+				console.debug('Cannot boost element:', e.message);
+			}
+		}
+		
+		document.querySelectorAll('video, audio').forEach(boostMediaElement);
+		
+		if (!window.mediaObserver) {
+			window.mediaObserver = new MutationObserver((mutations) => {
+				for (const m of mutations) {
+					for (const node of m.addedNodes) {
+						if (node.nodeType === 1) {
+							if (node.matches?.('video, audio')) {
+								boostMediaElement(node);
+							}
+							node.querySelectorAll?.('video, audio').forEach(boostMediaElement);
+						}
+					}
+				}
+			});
+			
+			window.mediaObserver.observe(document.documentElement, {
+				childList: true,
+				subtree: true
+			});
+			
+			setTimeout(() => {
+				window.mediaObserver?.disconnect();
+				window.mediaObserver = null;
+			}, 30 * 60 * 1000);
+		}
+	} catch (error) {
+		console.error('Volume boost failed:', error);
 	}
-}
-
-function getVolumeBoost() {
-	return window.gainNode ? window.gainNode.gain.value : null;
 }
 
 function clampVolumeValue(value, min = volumes.min, max = volumes.max) {
