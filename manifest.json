@@ -1,0 +1,27 @@
+{
+	"manifest_version": 3,
+	"name": "__MSG_extensionName__",
+	"version": "1.0",
+	"description": "__MSG_extensionDescription__",
+	"permissions": ["activeTab", "tabs", "scripting"],
+	"default_locale": "en",
+	"action": {
+		"default_popup": "popup.html",
+		"default_icon": {
+			"48": "icon.png"
+		}
+	},
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "volume-booster@example.com",
+			"strict_min_version": "109.0"
+		}
+	},
+	"icons": {
+		"48": "icon.png"
+	},
+	"background": {
+		"service_worker": "background.js",
+		"scripts": ["background.js"]
+	}
+}

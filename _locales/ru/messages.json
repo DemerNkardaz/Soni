@@ -1,0 +1,23 @@
+{
+  "extensionName": {
+    "message": "Сонӣ | Регулятор громкости вкладок"
+  },
+	"extensionDescription": {
+		"message": "Управляйте громкостью текущей вкладки от 0% до 500%."
+	},
+  "title": {
+    "message": "Сонӣ"
+  },
+	"subtitle": {
+		"message": "Регулятор громкости вкладки"
+	},
+	"volumeWarning": {
+		"message": "Предупреждение: Высокая громкость может повредить слух."
+	},
+	"createdBy": {
+		"message": "от"
+	},
+	"yallaNkardaz": {
+		"message": "Яллы Нкардаз"
+	}
+}

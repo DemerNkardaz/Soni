@@ -1,0 +1,23 @@
+{
+  "extensionName": {
+    "message": "Sonī | Tab Volume Regulator"
+  },
+	"extensionDescription": {
+		"message": "Control volume of current tab from 0% to 500%."
+	},
+	"title": {
+		"message": "Sonī"
+	},
+	"subtitle": {
+		"message": "Tab Volume Regulator"
+	},
+	"volumeWarning": {
+		"message": "Warning: High volume can damage hearing."
+	},
+	"createdBy": {
+		"message": "by"
+	},
+	"yallaNkardaz": {
+		"message": "Yalla Nkardaz"
+	}
+}
