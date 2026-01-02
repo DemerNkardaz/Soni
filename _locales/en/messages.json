@@ -11,6 +11,9 @@
 	"subtitle": {
 		"message": "Tab Volume Regulator"
 	},
+	"noAudibleTabs": {
+		"message": "No audible tabs"
+	},
 	"volumeWarning": {
 		"message": "Warning: High volume can damage hearing."
 	},

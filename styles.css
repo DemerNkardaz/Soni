@@ -179,3 +179,36 @@ body {
 	transform: translateX(-50%);
 	z-index: 1;
 }
+
+
+.tbr-audible-tabs-list {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	max-height: 150px;
+	overflow-y: auto;
+	margin-top: 0.5rem;
+}
+
+.tbr-audible-tab {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	padding: 2px 4px;
+	border-radius: 4px;
+}
+
+.tbr-audible-tab:hover {
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+.tbr-tab-icon {
+	margin-right: 6px;
+}
+
+.tbr-tab-title {
+	font-size: 0.85rem;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}

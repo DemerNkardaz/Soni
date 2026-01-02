@@ -14,6 +14,7 @@ const volumes = { min: 0, max: 500, step: 5 };
 
 document.addEventListener('DOMContentLoaded', () => {
 	const elementsToLocalize = document.querySelectorAll('[data-localeKey]');
+	const currentValueContainer = document.querySelector('.tbr-current-value');
 	const slider = document.getElementById('vol-slider');
 	const btnIncrease = document.getElementById('vol-plus');
 	const btnDecrease = document.getElementById('vol-minus');
@@ -48,7 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		staticButtonWrapper.appendChild(btn);
 	});
 
-	getCurrentVolume().then(vol => slider.value = vol).catch(() => slider.value = 100);
+	getCurrentVolume().then(vol => updateUI(vol)).catch(() => updateUI(100));
+	populateAudibleTabsList();
 });
 
 function setSliderGradient(slider) {
@@ -94,8 +96,6 @@ function createSliderTicks() {
 		ticksContainer.appendChild(tick);
 	});
 }
-
-
 
 function getVolumeColor(value) {
 	return value <= 200 ? colorValues.safe
@@ -154,8 +154,10 @@ function getCurrentVolume() {
 
 function updateUI(volume) {
 	const slider = document.getElementById('vol-slider');
-
+	const currentValueContainer = document.querySelector('.tbr-current-value');
+	
 	slider.value = volume;
+	currentValueContainer.textContent = `${volume}%`;
 	
 	currentBrowser.action.setBadgeText({ text: `${volume}` });
 	currentBrowser.action.setBadgeBackgroundColor({ color: getVolumeColor(volume) });
@@ -196,4 +198,52 @@ function getVolumeBoost() {
 
 function clampVolumeValue(value, min = volumes.min, max = volumes.max) {
 	return Math.min(Math.max(value, min), max);
+}
+
+
+async function populateAudibleTabsList() {
+	const listContainer = document.querySelector('.tbr-audible-tabs-list');
+	if (!listContainer) return;
+	
+	listContainer.innerHTML = '';
+
+	try {
+		const tabs = await currentBrowser.tabs.query({currentWindow: true});
+		const audibleTabs = tabs.filter(tab => tab.audible);
+
+		if (audibleTabs.length === 0) {
+			const emptyItem = document.createElement('div');
+			emptyItem.textContent = currentBrowser.i18n.getMessage('noAudibleTabs');
+			emptyItem.classList.add('tbr-audible-tab-empty');
+			listContainer.appendChild(emptyItem);
+			return;
+		}
+
+		audibleTabs.forEach(tab => {
+			const tabItem = document.createElement('div');
+			tabItem.classList.add('tbr-audible-tab');
+
+			const favIcon = document.createElement('img');
+			favIcon.src = tab.favIconUrl || 'icons/default-16.png';
+			favIcon.classList.add('tbr-tab-icon');
+			favIcon.width = 16;
+			favIcon.height = 16;
+
+			const title = document.createElement('span');
+			title.textContent = tab.title || 'Untitled';
+			title.classList.add('tbr-tab-title');
+
+			tabItem.appendChild(favIcon);
+			tabItem.appendChild(title);
+
+			tabItem.addEventListener('click', () => {
+				currentBrowser.tabs.update(tab.id, {active: true});
+				currentBrowser.windows.update(tab.windowId, {focused: true});
+			});
+				listContainer.appendChild(tabItem);
+		});
+
+	} catch (e) {
+		console.error('Error fetching audible tabs:', e);
+	}
 }

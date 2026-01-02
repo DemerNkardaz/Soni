@@ -3,7 +3,8 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:;">
+
 	<title>Tab Volume Regulator</title>
 	<link rel="stylesheet" href="styles.css">
 </head>
@@ -12,10 +13,9 @@
 		<header class="tbr-header">
 			<h1 class="tbr-header__title" data-localeKey="title">Sonī</h1>
 			<p class="tbr-header__subTitle" data-localeKey="subTitle">Tab Volume Regulator</p>
-
-
 		</header>
 		<main class="tbr-main">
+			<div class="tbr-current-value">100%</div>
 			<div class="tbr-controls">
 				<div class="tbr-controls__adjust">
 					<button id="vol-minus" type="button">−5%</button>
@@ -27,6 +27,7 @@
 				</div>
 				<div class="tbr-controls__static-values"></div>
 			</div>
+			<div class="tbr-audible-tabs-list"></div>
 		</main>
 		<footer class="tbr-footer">
 			<p class="tbr-credit">
