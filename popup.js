@@ -241,8 +241,22 @@ async function populateAudibleTabsList() {
 			return
 		} else {
 			const tabsHeader = document.createElement('div')
-			tabsHeader.textContent = currentBrowser.i18n.getMessage('audibleTabs')
+			// tabsHeader.textContent = currentBrowser.i18n.getMessage('audibleTabs')
 			tabsHeader.classList.add('tbr-audible-tabs-header')
+				
+			const equalizerIcon = document.createElement('img')
+			equalizerIcon.src = 'media/equalizer.svg'
+			equalizerIcon.width = 16
+			equalizerIcon.height = 16
+			equalizerIcon.classList.add('tbr-equalizer-icon')
+
+			const headerText = document.createElement('span')
+			headerText.textContent = currentBrowser.i18n.getMessage('audibleTabs')
+			headerText.classList.add('tbr-audible-tabs-header-text')
+
+			tabsHeader.appendChild(equalizerIcon)
+			tabsHeader.appendChild(headerText)
+
 			listContainer.appendChild(tabsHeader)
 		}
 

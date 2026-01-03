@@ -209,6 +209,13 @@ body {
   z-index: 2;
 }
 
+.tbr-audible-tabs-header {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+}
+
 .tbr-audible-tabs-list {
 	display: flex;
 	flex-direction: column;
