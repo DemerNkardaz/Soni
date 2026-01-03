@@ -26,7 +26,10 @@
   "createdBy": {
     "message": "által"
   },
-  "author": {
+  "authorInflected": {
     "message": "Yalla Nkardaz"
-  }
+  },
+	"author": {
+		"message": "Yalla Nkardaz"
+	}
 }

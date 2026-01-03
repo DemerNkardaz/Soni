@@ -26,6 +26,9 @@
 	"createdBy": {
 		"message": "by"
 	},
+	"authorInflected": {
+		"message": "Yalla Nkardaz"
+	},
 	"author": {
 		"message": "Yalla Nkardaz"
 	}

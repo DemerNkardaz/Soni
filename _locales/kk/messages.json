@@ -26,7 +26,10 @@
 	"createdBy": {
 		"message": ""
 	},
-	"author": {
+	"authorInflected": {
 		"message": "Ялла Нкардаздан"
+	},
+	"author": {
+		"message": "Ялла Нкардаз"
 	}
 }
