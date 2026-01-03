@@ -1,0 +1,32 @@
+{
+  "extName": {
+    "message": "Sonī | Fül hangerő-szabályzó"
+  },
+  "shortDesc": {
+    "message": "Az aktív fül hangerejét 0%-tól 500%-ig állíthatja."
+  },
+  "storeDesc": {
+    "message": "A bővítmény lehetővé teszi az aktív fül hangerejének 0%-tól 500%-ig történő szabályozását, és megmutatja a hangot lejátszó fülek listáját.\n\n\n**Megjegyzések**\n\n— Telepítés után szükség lehet a céloldal újratöltésére.\n— Nem működik minden médiamegoldással az oldalakon (például VKontakte vagy Spotify zene)."
+  },
+  "title": {
+    "message": "Sonī"
+  },
+  "subTitle": {
+    "message": "Fül hangerő-szabályzó"
+  },
+  "noAudibleTabs": {
+    "message": "Nincsenek hangot lejátszó fülek"
+  },
+  "audibleTabs": {
+    "message": "Jelenleg a következő füleken hallható hang:"
+  },
+  "volumeWarning": {
+    "message": "Figyelmeztetés: A magas hangerő károsíthatja a hallást."
+  },
+  "createdBy": {
+    "message": "által"
+  },
+  "author": {
+    "message": "Yalla Nkardaz"
+  }
+}

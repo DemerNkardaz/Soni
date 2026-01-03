@@ -1,0 +1,32 @@
+{
+  "extName": {
+    "message": "Sonī | Lautstärkeregler für Tabs"
+  },
+  "shortDesc": {
+    "message": "Steuern Sie die Lautstärke des aktuellen Tabs von 0% bis 500%."
+  },
+  "storeDesc": {
+    "message": "Die Erweiterung ermöglicht die Regelung der Lautstärke des aktiven Tabs von 0% bis 500% und zeigt die Liste der Tabs an, in denen Ton wiedergegeben wird.\n\n\n**Hinweise**\n\n— Nach der Installation kann ein Neuladen der Zielseite erforderlich sein.\n— Funktioniert nicht mit allen Arten der Medienbereitstellung auf Seiten (z. B. Musik auf VKontakte oder Spotify)."
+  },
+  "title": {
+    "message": "Sonī"
+  },
+  "subTitle": {
+    "message": "Lautstärkeregler für Tabs"
+  },
+  "noAudibleTabs": {
+    "message": "Keine Tabs mit aktivem Audio"
+  },
+  "audibleTabs": {
+    "message": "Derzeit wird in folgenden Tabs Ton wiedergegeben:"
+  },
+  "volumeWarning": {
+    "message": "Warnung: Hohe Lautstärke kann das Gehör schädigen."
+  },
+  "createdBy": {
+    "message": "von"
+  },
+  "author": {
+    "message": "Yalla Nkardaz"
+  }
+}

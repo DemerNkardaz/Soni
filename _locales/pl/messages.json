@@ -1,0 +1,32 @@
+{
+  "extName": {
+    "message": "Sonī | Regulator głośności kart"
+  },
+  "shortDesc": {
+    "message": "Steruj głośnością bieżącej karty od 0% do 500%."
+  },
+  "storeDesc": {
+    "message": "Rozszerzenie pozwala regulować głośność aktywnej karty od 0% do 500% oraz zobaczyć listę kart, na których odtwarzany jest dźwięk.\n\n\n**Uwagi**\n\n— Po instalacji może być konieczne odświeżenie docelowej strony.\n— Nie działa ze wszystkimi sposobami udostępniania mediów na stronach (np. muzyka VKontakte lub Spotify)."
+  },
+  "title": {
+    "message": "Sonī"
+  },
+  "subTitle": {
+    "message": "Regulator głośności karty"
+  },
+  "noAudibleTabs": {
+    "message": "Brak kart z aktywnym audio"
+  },
+  "audibleTabs": {
+    "message": "Dźwięk jest obecnie odtwarzany na kartach:"
+  },
+  "volumeWarning": {
+    "message": "Ostrzeżenie: Duża głośność może uszkodzić słuch."
+  },
+  "createdBy": {
+    "message": "od"
+  },
+  "author": {
+    "message": "Yalla Nkardaz"
+  }
+}

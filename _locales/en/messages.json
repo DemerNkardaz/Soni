@@ -1,14 +1,17 @@
 {
-  "extensionName": {
+  "extName": {
     "message": "Sonī | Tab Volume Regulator"
   },
-	"extensionDescription": {
+	"shortDesc": {
 		"message": "Control volume of current tab from 0% to 500%."
+	},
+	"storeDesc": {
+		"message": "This extension allows you to control the volume of the active tab from 0% to 500%, as well as see a list of tabs that are currently playing audio.\n\n\n**Notes**\n\n— A page reload may be required after installing the extension.\n— May not work with several methods of media delivery on pages (e.g., music on VKontakte or Spotify)."
 	},
 	"title": {
 		"message": "Sonī"
 	},
-	"subtitle": {
+	"subTitle": {
 		"message": "Tab Volume Regulator"
 	},
 	"noAudibleTabs": {

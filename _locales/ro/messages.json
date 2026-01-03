@@ -1,0 +1,32 @@
+{
+  "extName": {
+    "message": "Sonī | Regulator de volum pentru file"
+  },
+	"shortDesc": {
+		"message": "Controlează volumul filei curente de la 0% la 500%."
+	},
+	"storeDesc": {
+		"message": "Această extensie îți permite să controlezi volumul filei active de la 0% la 500%, precum și să vezi o listă a filelor care redau în prezent audio.\n\n\n**Note**\n\n— Poate fi necesară reîncărcarea paginii după instalarea extensiei.\n— Poate să nu funcționeze cu mai multe metode de redare media pe pagini (de exemplu, muzică pe VKontakte sau Spotify)."
+	},
+	"title": {
+		"message": "Sonī"
+	},
+	"subTitle": {
+		"message": "Regulator de volum pentru file"
+	},
+	"noAudibleTabs": {
+		"message": "Nu sunt file cu sunet"
+	},
+	"audibleTabs": {
+		"message": "Filele curente cu sunet:"
+	},
+	"volumeWarning": {
+		"message": "Avertisment: Volumul ridicat poate da probleme la audiere."
+	},
+	"createdBy": {
+		"message": "de"
+	},
+	"author": {
+		"message": "Yalla Nkardaz"
+	}
+}
