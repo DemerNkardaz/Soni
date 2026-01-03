@@ -3,16 +3,16 @@
     "message": "Sonī | Régulateur du volume des onglets"
   },
   "shortDesc": {
-    "message": "Contrôlez le volume de l'onglet actif de 0% à 500%."
+    "message": "Contrôlez le volume de l’onglet actif de 0% à 500%."
   },
   "storeDesc": {
-    "message": "L'extension permet de régler le volume de l'onglet actif de 0% à 500% et de voir la liste des onglets qui diffusent du son.\n\n\n**Remarques**\n\n— Un rechargement de la page cible peut être nécessaire après l'installation de l'extension.\n— Ne fonctionne pas avec toutes les façons de fournir des médias sur les pages (par exemple la musique VKontakte ou Spotify)."
+    "message": "L’extension permet de régler le volume de l’onglet actif de 0% à 500% et de voir la liste des onglets qui diffusent du son.\n\n\n**Remarques**\n\n— Un rechargement de la page cible peut être nécessaire après l’installation de l’extension.\n— Ne fonctionne pas avec toutes les façons de fournir des médias sur les pages (par exemple la musique VKontakte ou Spotify)."
   },
   "title": {
     "message": "Sonī"
   },
   "subTitle": {
-    "message": "Régulateur de volume de l'onglet"
+    "message": "Régulateur de volume de l’onglet"
   },
   "noAudibleTabs": {
     "message": "Aucun onglet avec audio actif"
@@ -21,7 +21,7 @@
     "message": "Le son est actuellement lu dans les onglets :"
   },
   "volumeWarning": {
-    "message": "Attention : un volume élevé peut endommager l'audition."
+    "message": "Attention : un volume élevé peut endommager l’audition."
   },
   "createdBy": {
     "message": "par"
