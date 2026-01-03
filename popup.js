@@ -285,6 +285,11 @@ async function populateAudibleTabsList() {
 		}
 
 		audibleTabs.forEach(async tab => {
+			const tabsHeader = document.createElement('div')
+			tabsHeader.textContent = currentBrowser.i18n.getMessage('audibleTabs')
+			tabsHeader.classList.add('tbr-audible-tabs-header')
+			listContainer.appendChild(tabsHeader)
+
 			const tabItem = document.createElement('div')
 			tabItem.classList.add('tbr-audible-tab')
 
@@ -295,7 +300,7 @@ async function populateAudibleTabsList() {
 			favIcon.height = 16
 
 			const title = document.createElement('span')
-			title.textContent = tab.title || 'Untitled'
+			title.textContent = trimAudibleTabTitle(tab.title || 'Untitled')
 			title.classList.add('tbr-tab-title')
 
 			const volumeLabel = document.createElement('span')
@@ -337,4 +342,9 @@ async function populateAudibleTabsList() {
 	} catch (e) {
 		console.error('Error fetching audible tabs:', e)
 	}
+}
+
+function trimAudibleTabTitle(title, maxLength = 48) {
+	if (title.length <= maxLength) return title;
+	return title.substring(0, maxLength - 3) + '\u2002[…]';
 }

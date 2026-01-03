@@ -14,6 +14,9 @@
 	"noAudibleTabs": {
 		"message": "No audible tabs"
 	},
+	"audibleTabs": {
+		"message": "Currently playing audio on tabs:"
+	},
 	"volumeWarning": {
 		"message": "Warning: High volume can damage hearing."
 	},
