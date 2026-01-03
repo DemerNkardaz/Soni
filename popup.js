@@ -12,6 +12,8 @@ const colorValues = {
 
 const volumes = { min: 0, max: 500, step: 5 };
 
+let currentVolume = 100;
+
 document.addEventListener('DOMContentLoaded', () => {
 	const elementsToLocalize = document.querySelectorAll('[data-localeKey]');
 	const currentValueContainer = document.querySelector('.tbr-current-value');
@@ -50,7 +52,13 @@ document.addEventListener('DOMContentLoaded', () => {
 		staticButtonWrapper.appendChild(btn);
 	});
 
-	getCurrentVolume().then(vol => updateUI(vol)).catch(() => updateUI(100));
+	getCurrentVolume().then(vol => {
+		currentVolume = vol;
+		updateUI(vol);
+	}).catch(() => {
+		currentVolume = 100;
+		updateUI(100);
+	});
 	populateAudibleTabsList();
 });
 
@@ -134,6 +142,8 @@ function getVolumeColor(value) {
 
 function setTabVolume(volume) {
 	const vol = clampVolumeValue(volume);
+	currentVolume = vol;
+	
 	currentBrowser.tabs.query({active: true, currentWindow: true}, (tabs) => {
 		if (tabs[0]) {
 			currentBrowser.scripting.executeScript({
@@ -149,35 +159,33 @@ function setTabVolume(volume) {
 }
 
 function adjustVolume(delta) {
-	getCurrentVolume().then(currentVolume => {
-		const newVolume = clampVolumeValue(currentVolume + delta);
-		setTabVolume(newVolume);
-	}).catch(() => {
-		setTabVolume(clampVolumeValue(volumes.min));
-	});
+	const newVolume = clampVolumeValue(currentVolume + delta);
+	setTabVolume(newVolume);
 }
-
 
 function getCurrentVolume() {
 	return new Promise((resolve, reject) => {
 		currentBrowser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 			if (!tabs[0]) {
-				resolve(100);
+				reject(new Error('No active tab'));
 				return;
 			}
 			currentBrowser.scripting.executeScript({
 				target: { tabId: tabs[0].id },
 				func: getVolumeBoost
 			}).then((results) => {
-				const vol = results?.[0]?.result != null ? Math.round(results[0].result * 100) : 100;
-				resolve(vol);
-			}).catch(() => {
-				resolve(100);
+				const vol = results?.[0]?.result != null ? Math.round(results[0].result * 100) : null;
+				if (vol !== null) {
+					resolve(vol);
+				} else {
+					reject(new Error('No volume data'));
+				}
+			}).catch((error) => {
+				reject(error);
 			});
 		});
 	});
 }
-
 
 function updateUI(volume) {
 	const slider = document.getElementById('vol-slider');
@@ -250,6 +258,8 @@ function applyVolumeBoost(gain) {
 		console.error('Volume boost failed:', error);
 	}
 }
+
+function getVolumeBoost() { return window.gainNode ? window.gainNode.gain.value : null; }
 
 function clampVolumeValue(value, min = volumes.min, max = volumes.max) {
 	return Math.min(Math.max(value, min), max);
