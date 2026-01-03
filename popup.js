@@ -146,13 +146,17 @@ function setTabVolume(volume) {
 	
 	currentBrowser.tabs.query({active: true, currentWindow: true}, (tabs) => {
 		if (tabs[0]) {
-			currentBrowser.scripting.executeScript({
-				target: {tabId: tabs[0].id},
-				func: applyVolumeBoost,
-				args: [vol / 100]
-			}).catch((error) => {
-				console.error('Failed to apply volume:', error);
-			});
+			currentBrowser.tabs.sendMessage(
+				tabs[0].id,
+				{ action: 'setVolume', volume: vol / 100 },
+				(response) => {
+					if (currentBrowser.runtime.lastError) {
+						console.error('Failed to send message:', currentBrowser.runtime.lastError);
+					} else if (response && response.success) {
+						console.log('Volume applied successfully');
+					}
+				}
+			);
 		}
 	});
 	updateUI(vol);
@@ -170,19 +174,31 @@ function getCurrentVolume() {
 				reject(new Error('No active tab'));
 				return;
 			}
-			currentBrowser.scripting.executeScript({
-				target: { tabId: tabs[0].id },
-				func: getVolumeBoost
-			}).then((results) => {
-				const vol = results?.[0]?.result != null ? Math.round(results[0].result * 100) : null;
-				if (vol !== null) {
-					resolve(vol);
-				} else {
-					reject(new Error('No volume data'));
+			
+			currentBrowser.tabs.sendMessage(
+				tabs[0].id,
+				{ action: 'getVolume' },
+				(response) => {
+					if (currentBrowser.runtime.lastError || !response || !response.success) {
+						currentBrowser.scripting.executeScript({
+							target: { tabId: tabs[0].id },
+							func: () => window.gainNode ? window.gainNode.gain.value : null
+						}).then((results) => {
+							const vol = results?.[0]?.result != null ? Math.round(results[0].result * 100) : null;
+							if (vol !== null) {
+								resolve(vol);
+							} else {
+								reject(new Error('No volume data'));
+							}
+						}).catch((error) => {
+							reject(error);
+						});
+					} else {
+						const vol = Math.round(response.volume * 100);
+						resolve(vol);
+					}
 				}
-			}).catch((error) => {
-				reject(error);
-			});
+			);
 		});
 	});
 }
@@ -203,68 +219,9 @@ function resetUI() {
 	currentBrowser.action.setBadgeText({ text: '' });
 }
 
-function applyVolumeBoost(gain) {
-	try {
-		if (!window.audioContext) {
-			window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-			window.gainNode = window.audioContext.createGain();
-			window.gainNode.connect(window.audioContext.destination);
-			window.boostedElements = new WeakMap();
-		}
-		
-		window.gainNode.gain.value = gain;
-		
-		function boostMediaElement(media) {
-			if (window.boostedElements.has(media)) {
-				return;
-			}
-			
-			try {
-				const source = window.audioContext.createMediaElementSource(media);
-				source.connect(window.gainNode);
-				window.boostedElements.set(media, source);
-			} catch (e) {
-				console.debug('Cannot boost element:', e.message);
-			}
-		}
-		
-		document.querySelectorAll('video, audio').forEach(boostMediaElement);
-		
-		if (!window.mediaObserver) {
-			window.mediaObserver = new MutationObserver((mutations) => {
-				for (const m of mutations) {
-					for (const node of m.addedNodes) {
-						if (node.nodeType === 1) {
-							if (node.matches?.('video, audio')) {
-								boostMediaElement(node);
-							}
-							node.querySelectorAll?.('video, audio').forEach(boostMediaElement);
-						}
-					}
-				}
-			});
-			
-			window.mediaObserver.observe(document.documentElement, {
-				childList: true,
-				subtree: true
-			});
-			
-			setTimeout(() => {
-				window.mediaObserver?.disconnect();
-				window.mediaObserver = null;
-			}, 30 * 60 * 1000);
-		}
-	} catch (error) {
-		console.error('Volume boost failed:', error);
-	}
-}
-
-function getVolumeBoost() { return window.gainNode ? window.gainNode.gain.value : null; }
-
 function clampVolumeValue(value, min = volumes.min, max = volumes.max) {
 	return Math.min(Math.max(value, min), max);
 }
-
 
 async function populateAudibleTabsList() {
 	const listContainer = document.querySelector('.tbr-audible-tabs-list')
@@ -282,13 +239,14 @@ async function populateAudibleTabsList() {
 			emptyItem.classList.add('tbr-audible-tab-empty')
 			listContainer.appendChild(emptyItem)
 			return
-		}
-
-		audibleTabs.forEach(async tab => {
+		} else {
 			const tabsHeader = document.createElement('div')
 			tabsHeader.textContent = currentBrowser.i18n.getMessage('audibleTabs')
 			tabsHeader.classList.add('tbr-audible-tabs-header')
 			listContainer.appendChild(tabsHeader)
+		}
+
+		audibleTabs.forEach(async tab => {
 
 			const tabItem = document.createElement('div')
 			tabItem.classList.add('tbr-audible-tab')
@@ -312,24 +270,42 @@ async function populateAudibleTabsList() {
 			tabItem.appendChild(volumeLabel)
 
 			try {
-				const results = await currentBrowser.scripting.executeScript({
-					target: {tabId: tab.id},
-					func: () => window.gainNode ? window.gainNode.gain.value : null
-				})
-				const gain = results?.[0]?.result
-				if (gain != null) {
-					volumeLabel.textContent = `${Math.round(gain * 100)}%`
-				} else {
-					volumeLabel.textContent = '100%'
-				}
+				currentBrowser.tabs.sendMessage(
+					tab.id,
+					{ action: 'getVolume' },
+					(response) => {
+						if (currentBrowser.runtime.lastError || !response || !response.success) {
+							currentBrowser.scripting.executeScript({
+								target: {tabId: tab.id},
+								func: () => window.gainNode ? window.gainNode.gain.value : null
+							}).then((results) => {
+								const gain = results?.[0]?.result
+								if (gain != null) {
+									volumeLabel.textContent = `${Math.round(gain * 100)}%`
+								} else {
+									volumeLabel.textContent = '100%'
+								}
+								updateVolumeLabel(volumeLabel);
+							}).catch(() => {
+								volumeLabel.textContent = '100%'
+								updateVolumeLabel(volumeLabel);
+							});
+						} else {
+							volumeLabel.textContent = `${Math.round(response.volume * 100)}%`
+							updateVolumeLabel(volumeLabel);
+						}
+					}
+				);
 			} catch {
 				volumeLabel.textContent = '100%'
+				updateVolumeLabel(volumeLabel);
 			}
 
-			const volumeValue = parseInt(volumeLabel.textContent)
-
-			volumeLabel.style.backgroundColor = getVolumeColor(volumeValue)
-			volumeLabel.style.color = (volumeValue >= 300 || volumeValue <= 200) ? '#fff' : '#333'
+			function updateVolumeLabel(label) {
+				const volumeValue = parseInt(label.textContent)
+				label.style.backgroundColor = getVolumeColor(volumeValue)
+				label.style.color = (volumeValue >= 300 || volumeValue <= 200) ? '#fff' : '#333'
+			}
 
 			tabItem.addEventListener('click', () => {
 				currentBrowser.tabs.update(tab.id, {active: true})

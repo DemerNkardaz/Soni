@@ -43,23 +43,33 @@ function refreshBadgeForTab(tabId) {
 		return;
 	}
 
-	currentBrowser.scripting.executeScript({
-		target: { tabId },
-		func: getVolumeBoost
-	})
-	.then((results) => {
-		const gain = results?.[0]?.result;
-
-		if (gain != null) {
-			const vol = clampVolumeValue(Math.round(gain * 100));
-			updateUI(vol);
-		} else {
-			resetUI();
+	currentBrowser.tabs.sendMessage(
+		tabId,
+		{ action: 'getVolume' },
+		(response) => {
+			if (currentBrowser.runtime.lastError || !response || !response.success) {
+				currentBrowser.scripting.executeScript({
+					target: { tabId },
+					func: getVolumeBoost
+				})
+				.then((results) => {
+					const gain = results?.[0]?.result;
+					if (gain != null) {
+						const vol = clampVolumeValue(Math.round(gain * 100));
+						updateUI(vol);
+					} else {
+						resetUI();
+					}
+				})
+				.catch(() => {
+					resetUI();
+				});
+			} else {
+				const vol = clampVolumeValue(Math.round(response.volume * 100));
+				updateUI(vol);
+			}
 		}
-	})
-	.catch(() => {
-		resetUI();
-	});
+	);
 }
 
 currentBrowser.tabs.onActivated.addListener(({ tabId }) => {
@@ -72,7 +82,11 @@ currentBrowser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 	}
 
 	if (changeInfo.status === 'complete') {
-		if (tab.active) refreshBadgeForTab(tabId);
+		if (tab.active) {
+			setTimeout(() => {
+				refreshBadgeForTab(tabId);
+			}, 100);
+		}
 	}
 });
 
@@ -83,7 +97,9 @@ currentBrowser.tabs.onRemoved.addListener(() => {
 currentBrowser.tabs.query({ active: true, currentWindow: true })
 	.then((tabs) => {
 		if (tabs[0]) {
-			refreshBadgeForTab(tabs[0].id);
+			setTimeout(() => {
+				refreshBadgeForTab(tabs[0].id);
+			}, 100);
 		} else {
 			resetUI();
 		}
