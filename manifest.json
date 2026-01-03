@@ -12,17 +12,27 @@
 		"default_popup": "popup.html",
 		"default_title": "__MSG_extensionName__",
 		"default_icon": {
-			"48": "icon.png"
+			"16": "media/icon16.png",
+			"32": "media/icon32.png",
+			"48": "media/icon48.png",
+			"64": "media/icon64.png",
+			"96": "media/icon96.png",
+			"128": "media/icon.svg"
 		}
 	},
 	"browser_specific_settings": {
 		"gecko": {
-			"id": "soni-volume-regulator@example.com",
+			"id": "soni-volume-regulator@nkardaz",
 			"strict_min_version": "109.0"
 		}
 	},
 	"icons": {
-		"48": "icon.png"
+		"16": "media/icon16.png",
+		"32": "media/icon32.png",
+		"48": "media/icon48.png",
+		"64": "media/icon64.png",
+		"96": "media/icon96.png",
+		"128": "media/icon.svg"
 	},
 	"background": {
 		"service_worker": "background.js",

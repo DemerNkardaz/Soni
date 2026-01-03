@@ -334,7 +334,7 @@ async function populateAudibleTabsList() {
 	}
 }
 
-function trimAudibleTabTitle(title, maxLength = 48) {
+function trimAudibleTabTitle(title, maxLength = 42) {
 	if (title.length <= maxLength) return title;
 	return title.substring(0, maxLength - 3) + '\u2002[…]';
 }
