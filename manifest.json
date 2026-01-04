@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "__MSG_extName__",
 	"short_name": "__MSG_title__",
-	"version": "1.0",
+	"version": "1.1",
 	"description": "__MSG_shortDesc__",
 	"author": "__MSG_author__",
 	"homepage_url": "https://github.com/DemerNkardaz/Soni",

@@ -10,6 +10,8 @@ const colorValues = {
 
 const volumes = { min: 0, max: 500 };
 
+const tabVolumes = new Map();
+
 function clampVolumeValue(value, min = volumes.min, max = volumes.max) {
 	return Math.min(Math.max(value, min), max);
 }
@@ -72,6 +74,20 @@ function refreshBadgeForTab(tabId) {
 	);
 }
 
+currentBrowser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	if (request.action === 'getSavedVolume' && sender.tab) {
+		const savedVolume = tabVolumes.get(sender.tab.id);
+		sendResponse({ volume: savedVolume || 1.0 });
+		return true;
+	}
+	
+	if (request.action === 'saveVolume' && sender.tab) {
+		tabVolumes.set(sender.tab.id, request.volume);
+		sendResponse({ success: true });
+		return true;
+	}
+});
+
 currentBrowser.tabs.onActivated.addListener(({ tabId }) => {
 	refreshBadgeForTab(tabId);
 });
@@ -90,7 +106,8 @@ currentBrowser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 	}
 });
 
-currentBrowser.tabs.onRemoved.addListener(() => {
+currentBrowser.tabs.onRemoved.addListener((tabId) => {
+	tabVolumes.delete(tabId);
 	resetUI();
 });
 
