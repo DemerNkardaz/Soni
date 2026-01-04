@@ -169,6 +169,11 @@ class VolumeManager {
 		if (!this.audioContext || !this.masterGainNode) {
 			return;
 		}
+
+		if (!element.crossOrigin) {
+			element.setAttribute('crossorigin', 'anonymous');
+			element.crossOrigin = 'anonymous';
+		}
 		
 		try {
 			const source = this.audioContext.createMediaElementSource(element);
