@@ -55,9 +55,10 @@ class VolumeManager {
 	constructor() {
 		this.currentGain = 1.0;
 		this.boostedElements = new WeakMap();
+		this.elementGainNodes = new WeakMap();
 		this.trackedElements = new Set();
 		this.audioContext = null;
-		this.gainNode = null;
+		this.masterGainNode = null;
 		
 		this.initializeAudioContext();
 		this.startMonitoring();
@@ -66,10 +67,10 @@ class VolumeManager {
 	initializeAudioContext() {
 		try {
 			this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-			this.gainNode = this.audioContext.createGain();
-			this.gainNode.connect(this.audioContext.destination);
+			this.masterGainNode = this.audioContext.createGain();
+			this.masterGainNode.connect(this.audioContext.destination);
 			
-			window.gainNode = this.gainNode;
+			window.gainNode = this.masterGainNode;
 			window.audioContext = this.audioContext;
 		} catch (e) {
 			console.error('Failed to initialize audio context:', e);
@@ -113,7 +114,7 @@ class VolumeManager {
 		
 		setInterval(() => {
 			this.updateAllVolumes();
-		}, 1000);
+		}, 100);
 	}
 	
 	applyToAllMedia() {
@@ -127,34 +128,51 @@ class VolumeManager {
 			return;
 		}
 		
-		if (!this.audioContext || !this.gainNode) {
+		if (!this.audioContext || !this.masterGainNode) {
 			return;
 		}
 		
 		try {
 			const source = this.audioContext.createMediaElementSource(element);
-			source.connect(this.gainNode);
+			
+			const elementGain = this.audioContext.createGain();
+			
+			source.connect(elementGain);
+			elementGain.connect(this.masterGainNode);
+			
 			this.boostedElements.set(element, source);
+			this.elementGainNodes.set(element, elementGain);
 			this.trackedElements.add(element);
 			
 			element.addEventListener('volumechange', () => {
-				if (this.currentGain <= 1.0) {
-					element.volume = Math.min(1.0, this.currentGain);
-				} else {
-					element.volume = 1.0;
-				}
+				this.updateElementGain(element);
 			});
+			
+			this.updateElementGain(element);
 		} catch (e) {
 			console.debug('Cannot boost element:', e.message);
 		}
 	}
 	
-	updateAllVolumes() {
-		if (!this.gainNode) return;
+	updateElementGain(element) {
+		const elementGain = this.elementGainNodes.get(element);
+		if (!elementGain) return;
 		
 		try {
-			this.gainNode.gain.value = this.currentGain;
+			const nativeVolume = element.volume;
 			
+			const combinedGain = nativeVolume * this.currentGain;
+			
+			elementGain.gain.value = combinedGain;
+		} catch (e) {
+			console.debug('Cannot update element gain:', e);
+		}
+	}
+	
+	updateAllVolumes() {
+		if (!this.masterGainNode) return;
+		
+		try {
 			if (window.__volumeGains) {
 				window.__volumeGains.forEach(gain => {
 					try {
@@ -167,13 +185,10 @@ class VolumeManager {
 			this.trackedElements.forEach(el => {
 				try {
 					if (document.contains(el)) {
-						if (this.currentGain <= 1.0) {
-							el.volume = Math.min(1.0, this.currentGain);
-						} else {
-							el.volume = 1.0;
-						}
+						this.updateElementGain(el);
 					} else {
 						this.trackedElements.delete(el);
+						this.elementGainNodes.delete(el);
 					}
 				} catch (e) {
 					console.debug('Cannot update element volume:', e);
@@ -187,7 +202,6 @@ class VolumeManager {
 	setVolume(gain) {
 		this.currentGain = Math.max(0, Math.min(5, gain));
 		this.updateAllVolumes();
-		
 		this.applyToAllMedia();
 	}
 	
